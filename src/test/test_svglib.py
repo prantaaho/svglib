@@ -202,23 +202,6 @@ class SVGSamplesTestCase(unittest.TestCase):
             except:
                 print "could not save as PDF [%d]" % i, path
 
-    def _test1(self):
-        "Test converting W3C SVG files to PDF using uniconverter."
-        # outcommented, because some SVG samples seem to generate errors
-
-        # skip test, if uniconv tool not found
-        if not os.popen("which uniconv").read().strip():
-            print "Uniconv not found, test skipped."
-            return
-
-        paths = glob.glob("samples/misc/*.svg")
-        for path in paths:
-            out = splitext(path)[0] + '-uniconv.pdf'
-            cmd = "uniconv '%s' '%s'" % (path, out)
-            os.popen(cmd).read()
-            if exists(out) and getsize(out) == 0:
-                os.remove(out)
-
 
 class WikipediaSymbolsTestCase(unittest.TestCase):
     "Tests on sample symbol SVG files from wikipedia.org."
@@ -233,11 +216,9 @@ class WikipediaSymbolsTestCase(unittest.TestCase):
         req.putheader('Host', server)
         req.putheader('Accept', 'text/svg')
         req.endheaders()
-        ec, em, h = req.getreply()
+        _ec, _em, _h = req.getreply()
         fd = req.getfile()
-        data = fd.read()
-
-        return data
+        return fd.read()
 
     def setUp(self):
         "Check if files exists, else download and unpack it."
@@ -264,8 +245,6 @@ class WikipediaSymbolsTestCase(unittest.TestCase):
 
         # convert
         for path in paths:
-            url = server + path
-            data = None
             p = join(os.getcwd(), self.folderPath, basename(path))
             if not exists(p):
                 try:
@@ -298,25 +277,6 @@ class WikipediaSymbolsTestCase(unittest.TestCase):
                 renderPDF.drawToFile(drawing, base, showBoundary=0)
             except:
                 print "could not save as PDF [%d]" % i, path
-
-    def _test1(self):
-        # outcommented
-        "Test converting symbol SVG files to PDF using uniconverter."
-
-        # skip test, if uniconv tool not found
-        if not os.popen("which uniconv").read().strip():
-            print "Uniconv not found, test skipped."
-            return
-
-        paths = glob.glob("%s/*" % self.folderPath)
-        paths = [p for p in paths
-                 if splitext(p.lower())[1] in [".svg", ".svgz"]]
-        for path in paths:
-            out = splitext(path)[0] + '-uniconv.pdf'
-            cmd = "uniconv '%s' '%s'" % (path, out)
-            os.popen(cmd).read()
-            if exists(out) and getsize(out) == 0:
-                os.remove(out)
 
 
 class WikipediaFlagsTestCase(unittest.TestCase):
@@ -440,25 +400,6 @@ class WikipediaFlagsTestCase(unittest.TestCase):
             except:
                 print "could not save as PDF [%d]" % i, path
 
-    def _test1(self):
-        # outcommented, because many SVG samples seem to generate errors
-        "Test converting flag SVG files to PDF using uniconverer."
-
-        # skip test, if uniconv tool not found
-        if not os.popen("which uniconv").read().strip():
-            print "Uniconv not found, test skipped."
-            return
-
-        paths = glob.glob("%s/*" % self.folderPath)
-        paths = [p for p in paths
-                 if splitext(p.lower())[1] in [".svg", ".svgz"]]
-        for path in paths:
-            out = splitext(path)[0] + '-uniconv.pdf'
-            cmd = "uniconv '%s' '%s'" % (path, out)
-            os.popen(cmd).read()
-            if exists(out) and getsize(out) == 0:
-                os.remove(out)
-
 
 class W3CTestCase(unittest.TestCase):
     "Tests using the official W3C SVG testsuite."
@@ -535,25 +476,6 @@ class W3CTestCase(unittest.TestCase):
                 renderPM.drawToFile(drawing, base, 'PNG')
             except:
                 print "could not save as PNG [%d]" % i, path
-
-    def _test1(self):
-        # outcommented, because many SVG samples seem to generate errors
-        "Test converting W3C SVG files to PDF using uniconverter."
-
-        # skip test, if uniconv tool not found
-        if not os.popen("which uniconv").read().strip():
-            print "Uniconv not found, test skipped."
-            return
-
-        paths = glob.glob("%s/svg/*" % self.folderPath)
-        paths = [p for p in paths
-                 if splitext(p.lower())[1] in [".svg", ".svgz"]]
-        for path in paths:
-            out = splitext(path)[0] + '-uniconv.pdf'
-            cmd = "uniconv '%s' '%s'" % (path, out)
-            os.popen(cmd).read()
-            if exists(out) and getsize(out) == 0:
-                os.remove(out)
 
 
 if __name__ == "__main__":
