@@ -15,23 +15,18 @@ converting tool named sv2pdf (which should also handle SVG files com-
 pressed with gzip and extension .svgz).
 """
 
-import sys
-import os
-import glob
 import types
 import re
-import operator
 import gzip
 import string
 import xml.dom.minidom
 
-from math import sqrt, sin, cos, atan2, pi
+from math import atan2
+from os.path import dirname
 
-from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.graphics.shapes import *
-from reportlab.graphics import renderPDF
 from reportlab.lib import colors
-from reportlab.lib.units import cm, inch, mm, pica, toLength
+from reportlab.lib.units import pica, toLength
 
 
 __version__ = "0.6.3"
@@ -222,9 +217,6 @@ def plot_arc(sx, sy, rx, ry, x_axis_rotation, large, sweep, x, y):
 
     th0 = atan2(y0 - yc, x0 - xc)
     th1 = atan2(y1 - yc, x1 - xc)
-
-    cx = (sx + x) / 2
-    cy = (sy + y) / 2
 
     adx = -cos(th1) * rx
     ady = -sin(th1) * ry
@@ -559,26 +551,16 @@ class SvgRenderer:
         self.level = 0
         self.path = path
         self.logFile = None
-        # if self.path:
-        #    logPath = os.path.splitext(self.path)[0] + ".log"
-        #    self.logFile = open(logPath, 'w')
 
     def render(self, node, parent=None):
         if parent is None:
             parent = self.mainGroup
         name = node.nodeName
-        if self.verbose:
-            format = "%s%s"
-            args = ('  ' * self.level, name)
-            # if not self.logFile:
-            #    print format % args
-            # else:
-            #    self.logFile.write((format+"\n") % args)
 
         if name == "svg":
             self.level = self.level + 1
             n = NodeTracker(node)
-            drawing = self.renderSvg(n)
+            _drawing = self.renderSvg(n)
             children = n.childNodes
             for child in children:
                 if child.nodeType != 1:
@@ -617,7 +599,6 @@ class SvgRenderer:
             self.level = self.level + 1
             n = NodeTracker(node)
             item = self.renderSymbol(n)
-            # parent.add(item)
             id = n.getAttribute("id")
             if id:
                 self.definitions[id] = item
@@ -651,17 +632,7 @@ class SvgRenderer:
             if a not in n.usedAttrs:
                 unusedAttrs.append(a)
 
-        if self.verbose and unusedAttrs:
-            format = "%s-Unused: %s"
-            args = ("  " * (self.level + 1), unusedAttrs.join(", "))
-            # if not self.logFile:
-            #    print format % args
-            # else:
-            #    self.logFile.write((format+"\n") % args)
-
         if LOGMESSAGES and unusedAttrs:
-            # print "Used attrs:", n.nodeName, n.usedAttrs
-            # print "All attrs:", n.nodeName, allAttrs
             print "Unused attrs:", n.nodeName, unusedAttrs
 
     def renderTitle_(self, node):
@@ -686,7 +657,6 @@ class SvgRenderer:
     def renderG(self, node, display=1):
         getAttr = node.getAttribute
         id, style, transform = map(getAttr, ("id", "style", "transform"))
-        # sw = map(getAttr, ("stroke-width",))
         self.attrs = self.attrConverter.parseMultiAttributes(style)
         gr = Group()
         children = node.childNodes
@@ -751,7 +721,6 @@ class SvgShapeConverter:
     def getHandledShapes(self):
         "Determine a list of handled shape elements."
 
-        items = dir(self)
         items = self.__class__.__dict__.keys()
         keys = []
         for i in items:
