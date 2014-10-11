@@ -6,7 +6,6 @@
 For further information please look into the file README.txt!
 """
 
-import re
 import sys
 import getopt
 import os.path
@@ -24,7 +23,7 @@ __date__ = "2010-03-01"
 
 def svg2pdf(path, outputPat=None):
     "Convert an SVG file to a PDF one."
- 
+
     # generate a drawing from the SVG file
     try:
         drawing = svglib.svg2rlg(path)
@@ -39,10 +38,10 @@ def svg2pdf(path, outputPat=None):
     basename = os.path.basename(path)
     base = os.path.basename(os.path.splitext(path)[0])
     ext = os.path.splitext(path)[1]
-    
+
     aDict = {
-        "dirname":dirname, "basename":basename, 
-        "base":base, "ext":ext
+        "dirname": dirname, "basename": basename,
+        "base": base, "ext": ext
     }
     outPath = outputPat % aDict
 
@@ -67,7 +66,7 @@ def _showUsage():
     prog = os.path.basename(sys.argv[0])
     copyrightYear = __date__[:__date__.find("-")]
     args = (prog, __version__, __author__, copyrightYear, __license__)
-    print "%s v. %s, Copyleft by %s, %s (%s)" % args 
+    print "%s v. %s, Copyleft by %s, %s (%s)" % args
     print "An experimental SVG to PDF converter (via ReportLab Graphics)"
     print "USAGE: %s [options] file1.svg(z) [file2.svg(z)...]" % prog
     print """\
@@ -80,7 +79,7 @@ EXAMPLES:
   %(prog)s file1.svg file2.svgz # produce file1.pdf and file2.pdf
   %(prog)s path/file.svg        # produce path/file.pdf
   %(prog)s -o out.pdf file.svg  # produce out.pdf
-  %(prog)s -o "%%(basename)s.pdf" path/file*.svg  
+  %(prog)s -o "%%(basename)s.pdf" path/file*.svg
                                # creates all output in local dir.
 
 COPYLEFT:
@@ -99,7 +98,7 @@ def _main():
     except getopt.GetoptError:
         print "ERROR"
         _showUsage()
-    
+
     stopOptions = "-v --version -h --help"
     stopOptions = [key for (key, val) in opts if key in stopOptions]
     if len(args) == 0 and len(stopOptions) == 0:
@@ -117,9 +116,9 @@ def _main():
     # determine paths of input files
     paths = [a for a in args if os.path.exists(a)]
 
-    for path in paths:    
+    for path in paths:
         svg2pdf(path, outputPat)
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     _main()
